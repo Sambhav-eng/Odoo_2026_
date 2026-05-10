@@ -1,5 +1,5 @@
 import { useState } from "react";
-//Pages 1- 4
+
 // ─── Mock Data ───────────────────────────────────────────────────────────────
 const MOCK_TRIPS = [
   {
