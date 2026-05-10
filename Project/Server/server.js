@@ -5,12 +5,13 @@ const db = require("./config/db");
 
 const app = express();
 
+require('dotenv').config();
 
 app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-    res.send("Backend Running");
+    res.json({ message: "TravelLoop Backend Running" });
 });
 
 const PORT = 5001;
@@ -24,5 +25,7 @@ app.listen(PORT, (err) => {
 });
 
 const userRoutes = require("./routes/userRoutes");
+const tripRoutes = require("./routes/tripRoutes");
 
 app.use("/api/users", userRoutes);
+app.use("/api", tripRoutes);

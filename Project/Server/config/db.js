@@ -16,50 +16,65 @@ db.serialize(() => {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             email TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL
+            password TEXT NOT NULL,
+            profile_photo TEXT,
+            preferences TEXT
         )
     `, (err) => {
-        if (err) {
-            console.log("Users table error:", err.message);
-        } else {
-            console.log("Users table ready");
-        }
+        if (err) console.log("Users table error:", err.message);
+        else console.log("Users table ready");
     });
 
     // TRIPS TABLE
     db.run(`
         CREATE TABLE IF NOT EXISTS trips (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            destination TEXT NOT NULL,
-            price INTEGER NOT NULL,
-            days INTEGER NOT NULL,
+            user_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
             description TEXT,
-            image TEXT
+            start_date TEXT,
+            end_date TEXT,
+            cover_photo TEXT,
+            is_public INTEGER DEFAULT 0,
+            FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
         )
     `, (err) => {
-        if (err) {
-            console.log("Trips table error:", err.message);
-        } else {
-            console.log("Trips table ready");
-        }
+        if (err) console.log("Trips table error:", err.message);
+        else console.log("Trips table ready");
     });
 
-    // BOOKINGS TABLE
+    // STOPS (CITIES) TABLE
     db.run(`
-        CREATE TABLE IF NOT EXISTS bookings (
+        CREATE TABLE IF NOT EXISTS stops (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id INTEGER,
-            trip_id INTEGER,
-            booking_date TEXT,
-            FOREIGN KEY(user_id) REFERENCES users(id),
-            FOREIGN KEY(trip_id) REFERENCES trips(id)
+            trip_id INTEGER NOT NULL,
+            city_name TEXT NOT NULL,
+            country TEXT,
+            arrival_date TEXT,
+            departure_date TEXT,
+            order_index INTEGER,
+            FOREIGN KEY(trip_id) REFERENCES trips(id) ON DELETE CASCADE
         )
     `, (err) => {
-        if (err) {
-            console.log("Bookings table error:", err.message);
-        } else {
-            console.log("Bookings table ready");
-        }
+        if (err) console.log("Stops table error:", err.message);
+        else console.log("Stops table ready");
+    });
+
+    // ACTIVITIES TABLE
+    db.run(`
+        CREATE TABLE IF NOT EXISTS activities (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            stop_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            type TEXT,
+            cost REAL DEFAULT 0,
+            duration TEXT,
+            time_scheduled TEXT,
+            FOREIGN KEY(stop_id) REFERENCES stops(id) ON DELETE CASCADE
+        )
+    `, (err) => {
+        if (err) console.log("Activities table error:", err.message);
+        else console.log("Activities table ready");
     });
 
 });
