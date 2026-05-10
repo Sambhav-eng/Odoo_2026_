@@ -1,6 +1,8 @@
 const sqlite3 = require("sqlite3").verbose();
 
-const db = new sqlite3.Database("./database.db", (err) => {
+const dbPath = process.env.NODE_ENV === 'test' ? ':memory:' : './database.db';
+
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.log("Database connection error:", err.message);
     } else {

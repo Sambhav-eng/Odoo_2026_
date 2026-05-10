@@ -419,7 +419,7 @@ const fmt = (d) => new Date(d).toLocaleDateString("en-IN", { day: "numeric", mon
 const nights = (a, b) => Math.ceil((new Date(b) - new Date(a)) / 86400000);
 
 // ─── Shared components ────────────────────────────────────────────────────────
-function Topbar({ page, setPage, user }) {
+function Topbar({ setPage, user }) {
   return (
     <div className="topbar">
       <div className="topbar-logo">
@@ -1156,7 +1156,7 @@ function TripNotes({ setPage, showToast }) {
 // ─── Screen 5: Itinerary Builder ─────────────────────────────────────────────
 function ItineraryBuilder({ setPage, showToast }) {
   const [stops, setStops] = useState(MOCK_STOPS);
-  const [newCity, setNewCity] = useState("");
+
   const [showAddStop, setShowAddStop] = useState(false);
   const [newStop, setNewStop] = useState({ city: "", startDate: "", endDate: "" });
 
