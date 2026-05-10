@@ -412,7 +412,7 @@ const css = `
     .auth-card { padding: 28px 20px; }
     .page { padding: 16px 16px 60px; }
   }
-`;
+`;  
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const fmt = (d) => new Date(d).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
