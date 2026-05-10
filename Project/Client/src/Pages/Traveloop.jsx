@@ -26,7 +26,7 @@ const MOCK_TRIPS = [
     status: "completed",
     cover: "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80",
   },
-  {
+  { 
     id: 3,
     name: "Portugal Road Trip",
     startDate: "2025-06-01",
@@ -433,8 +433,11 @@ function Topbar({ page, setPage, user }) {
       <div className="topbar-actions">
         <button className="tb-btn" onClick={() => setPage("dashboard")}>Dashboard</button>
         <button className="tb-btn" onClick={() => setPage("trips")}>My Trips</button>
+        <button className="tb-btn" onClick={() => setPage("notes")}>Notes</button>
+        <button className="tb-btn" onClick={() => setPage("share")}>Share</button>
+        <button className="tb-btn" onClick={() => setPage("settings")}>Settings</button>
         <button className="tb-btn" onClick={() => setPage("newtrip")}>+ Plan Trip</button>
-        <div className="avatar" title={user?.name}>{user?.name?.[0] || "P"}</div>
+        <div className="avatar" title={user?.name} onClick={() => setPage("settings")} style={{ cursor: "pointer" }}>{user?.name?.[0] || "P"}</div>
       </div>
     </div>
   );
@@ -793,6 +796,363 @@ function MyTrips({ trips, setTrips, setPage, setEditTrip, showToast }) {
   );
 }
 
+// ─── Screen 6: Public Itinerary (Sharable Link) ────────────────────────────────
+function PublicItinerary({ setPage, showToast }) {
+  const [copied, setCopied] = useState(false);
+  const publicUrl = "https://traveloop.app/share/trip-abc123xyz";
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(publicUrl);
+    setCopied(true);
+    showToast("Link copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const shareToSocial = (platform) => {
+    const msg = encodeURIComponent("Check out my Golden Triangle India trip on Traveloop!");
+    const urls = {
+      twitter: `https://twitter.com/intent/tweet?text=${msg}&url=${encodeURIComponent(publicUrl)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(publicUrl)}`,
+      whatsapp: `https://wa.me/?text=${msg} ${publicUrl}`
+    };
+    window.open(urls[platform], "_blank");
+  };
+
+  return (
+    <div className="page">
+      <div className="flex-between mb-20">
+        <div>
+          <div style={{ fontFamily: "var(--font-head)", fontSize: 20, fontWeight: 700 }}>Share Your Trip</div>
+          <div className="text-muted mt-6">Let others view, get inspired, or copy your itinerary</div>
+        </div>
+        <button className="btn btn-ghost btn-sm" onClick={() => setPage("trips")}>← Back</button>
+      </div>
+
+      {/* Share card */}
+      <div className="card card-pad mb-20" style={{ maxWidth: 600 }}>
+        <div className="section-label">Public Link</div>
+        <div className="flex gap-8 mb-16">
+          <input className="input" type="text" value={publicUrl} readOnly style={{ background: "var(--surface2)" }} />
+          <button className="btn btn-primary btn-sm" onClick={copyToClipboard} style={{ whiteSpace: "nowrap" }}>
+            {copied ? "✓ Copied" : "Copy Link"}
+          </button>
+        </div>
+
+        <div className="divider" />
+
+        {/* Itinerary summary */}
+        <div className="section-label mt-20">Trip Summary</div>
+        <div className="card" style={{ background: "var(--surface2)", border: "1px solid var(--border)", padding: "16px", marginBottom: 16, borderRadius: "10px" }}>
+          <div className="flex-between mb-8">
+            <div style={{ fontFamily: "var(--font-head)", fontWeight: 700, fontSize: 15 }}>Golden Triangle India</div>
+            <span className="badge badge-upcoming">Upcoming</span>
+          </div>
+          <div className="text-sm text-muted mb-8">Delhi, Agra and Jaipur – the classic royal circuit.</div>
+          <div className="flex gap-16 text-sm">
+            <div><span className="fw-600">Dates:</span> Mar 10 - Mar 22, 2025</div>
+            <div><span className="fw-600">Duration:</span> 12 nights</div>
+            <div><span className="fw-600">Stops:</span> 3 cities</div>
+          </div>
+        </div>
+
+        <div className="divider" />
+
+        {/* Social sharing */}
+        <div className="section-label mt-20">Share on Social Media</div>
+        <div className="flex gap-8 mt-12">
+          <button className="btn btn-outline" onClick={() => shareToSocial("twitter")} style={{ flex: 1 }}>
+            <span>𝕏 Twitter</span>
+          </button>
+          <button className="btn btn-outline" onClick={() => shareToSocial("facebook")} style={{ flex: 1 }}>
+            <span>f Facebook</span>
+          </button>
+          <button className="btn btn-outline" onClick={() => shareToSocial("whatsapp")} style={{ flex: 1 }}>
+            <span>💬 WhatsApp</span>
+          </button>
+        </div>
+
+        <div className="divider mt-20" />
+
+        {/* Copy trip button */}
+        <div className="mt-20">
+          <button className="btn btn-primary" style={{ width: "100%" }}>
+            📋 Copy This Trip
+          </button>
+        </div>
+      </div>
+
+      {/* Read-only itinerary preview */}
+      <div className="card card-pad">
+        <div className="section-label">Itinerary Preview (Read-Only)</div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 14 }}>
+          {[
+            { city: "Delhi", days: "Mar 10-12", activities: ["Red Fort", "India Gate", "Taj Mahal day trip"] },
+            { city: "Agra", days: "Mar 13-15", activities: ["Taj Mahal", "Agra Fort", "Mehtab Bagh"] },
+            { city: "Jaipur", days: "Mar 16-22", activities: ["City Palace", "Jantar Mantar", "Hawa Mahal"] }
+          ].map((stop, idx) => (
+            <div key={idx} style={{ padding: 12, background: "var(--surface2)", borderRadius: "8px", borderLeft: "3px solid var(--accent)" }}>
+              <div className="fw-600">{stop.city}</div>
+              <div className="text-xs text-muted mt-2">{stop.days}</div>
+              <div className="text-sm mt-6">Activities:</div>
+              <ul style={{ marginLeft: 20, marginTop: 4, fontSize: 13, color: "var(--muted)" }}>
+                {stop.activities.map((act, i) => <li key={i}>{act}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Screen 7: User Settings ──────────────────────────────────────────────────
+function UserSettings({ user, setUser, setPage, showToast }) {
+  const [editMode, setEditMode] = useState(false);
+  const [form, setForm] = useState({ name: user?.name || "", email: user?.email || "", photo: "", language: "en", notifications: true });
+
+  const save = () => {
+    setUser({ ...user, name: form.name, email: form.email });
+    setEditMode(false);
+    showToast("Profile updated!");
+  };
+
+  const deleteAccount = () => {
+    if (window.confirm("Are you sure? This cannot be undone.")) {
+      showToast("Account deleted.");
+    }
+  };
+
+  return (
+    <div className="page">
+      <div className="flex-between mb-20">
+        <div>
+          <div style={{ fontFamily: "var(--font-head)", fontSize: 20, fontWeight: 700 }}>Settings</div>
+          <div className="text-muted mt-6">Manage your profile, preferences, and account</div>
+        </div>
+        <button className="btn btn-ghost btn-sm" onClick={() => setPage("dashboard")}>← Back</button>
+      </div>
+
+      {/* Profile section */}
+      <div className="card card-pad mb-20" style={{ maxWidth: 600 }}>
+        <div className="section-label">Profile Information</div>
+        
+        {editMode ? (
+          <>
+            <div className="field mb-16">
+              <label>Full Name</label>
+              <input
+                className="input"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
+
+            <div className="field mb-16">
+              <label>Email</label>
+              <input
+                className="input"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+
+            <div className="field mb-16">
+              <label>Profile Photo (URL)</label>
+              <input
+                className="input"
+                placeholder="https://…"
+                value={form.photo}
+                onChange={(e) => setForm({ ...form, photo: e.target.value })}
+              />
+            </div>
+
+            <div className="flex-end gap-8">
+              <button className="btn btn-ghost" onClick={() => setEditMode(false)}>Cancel</button>
+              <button className="btn btn-primary" onClick={save}>Save Changes</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex gap-16 mb-16">
+              <div style={{ width: 80, height: 80, borderRadius: "50%", background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32, color: "#fff", fontWeight: 700 }}>
+                {user?.name?.[0] || "P"}
+              </div>
+              <div>
+                <div className="text-sm fw-600">{form.name}</div>
+                <div className="text-sm text-muted mt-4">{form.email}</div>
+              </div>
+            </div>
+            <button className="btn btn-outline" onClick={() => setEditMode(true)}>Edit Profile</button>
+          </>
+        )}
+      </div>
+
+      {/* Preferences */}
+      <div className="card card-pad mb-20" style={{ maxWidth: 600 }}>
+        <div className="section-label">Preferences</div>
+        
+        <div className="flex-between mb-16">
+          <div>
+            <div className="text-sm fw-600">Language</div>
+            <div className="text-xs text-muted mt-2">Choose your preferred language</div>
+          </div>
+          <select className="input" style={{ maxWidth: 200 }} value={form.language} onChange={(e) => setForm({ ...form, language: e.target.value })}>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="hi">हिंदी</option>
+          </select>
+        </div>
+
+        <div className="divider" />
+
+        <div className="flex-between mt-16">
+          <div>
+            <div className="text-sm fw-600">Notifications</div>
+            <div className="text-xs text-muted mt-2">Email updates about your trips</div>
+          </div>
+          <input
+            type="checkbox"
+            checked={form.notifications}
+            onChange={(e) => setForm({ ...form, notifications: e.target.checked })}
+            style={{ width: 20, height: 20, cursor: "pointer" }}
+          />
+        </div>
+      </div>
+
+      {/* Saved destinations */}
+      <div className="card card-pad mb-20" style={{ maxWidth: 600 }}>
+        <div className="section-label">Saved Destinations</div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12, marginTop: 14 }}>
+          {["Tokyo", "Paris", "Bali", "New York"].map((dest) => (
+            <div key={dest} style={{ padding: 12, background: "var(--surface2)", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span className="text-sm fw-600">{dest}</span>
+              <button className="btn btn-ghost btn-xs">✕</button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Danger zone */}
+      <div className="card card-pad" style={{ maxWidth: 600, background: "rgba(224,92,92,.08)", border: "1px solid var(--danger)" }}>
+        <div className="section-label">Danger Zone</div>
+        <div className="text-sm text-muted mb-12">Permanently delete your account and all associated data.</div>
+        <button className="btn btn-danger" onClick={deleteAccount}>Delete Account</button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Screen 8: Trip Notes ─────────────────────────────────────────────────────
+function TripNotes({ setPage, showToast }) {
+  const [notes, setNotes] = useState([
+    { id: 1, date: "2025-03-10", title: "Day 1 Notes", content: "Flight was smooth. Checked in at hotel. Saw Red Fort in evening." },
+    { id: 2, date: "2025-03-11", title: "Delhi explorations", content: "Visited India Gate and Qutb Minar. Loved the chai at the roadside." }
+  ]);
+  const [showAddNote, setShowAddNote] = useState(false);
+  const [newNote, setNewNote] = useState({ date: "", title: "", content: "" });
+
+  const addNote = () => {
+    if (!newNote.title.trim()) return;
+    setNotes([...notes, { id: Date.now(), ...newNote }]);
+    setNewNote({ date: "", title: "", content: "" });
+    setShowAddNote(false);
+    showToast("Note saved!");
+  };
+
+  const deleteNote = (id) => {
+    setNotes(notes.filter((n) => n.id !== id));
+    showToast("Note deleted.");
+  };
+
+  return (
+    <div className="page">
+      <div className="flex-between mb-20">
+        <div>
+          <div style={{ fontFamily: "var(--font-head)", fontSize: 20, fontWeight: 700 }}>Trip Notes</div>
+          <div className="text-muted mt-6">Write and save notes or reminders tied to your trip</div>
+        </div>
+        <div className="flex gap-8">
+          <button className="btn btn-ghost btn-sm" onClick={() => setPage("trips")}>← Back</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowAddNote(!showAddNote)}>
+            {showAddNote ? "Cancel" : "+ Add Note"}
+          </button>
+        </div>
+      </div>
+
+      {/* Add note form */}
+      {showAddNote && (
+        <div className="card card-pad mb-20">
+          <div className="section-label">New Note</div>
+          
+          <div className="field mb-16">
+            <label>Date</label>
+            <input
+              className="input"
+              type="date"
+              value={newNote.date}
+              onChange={(e) => setNewNote({ ...newNote, date: e.target.value })}
+            />
+          </div>
+
+          <div className="field mb-16">
+            <label>Title</label>
+            <input
+              className="input"
+              placeholder="e.g. Packing reminders"
+              value={newNote.title}
+              onChange={(e) => setNewNote({ ...newNote, title: e.target.value })}
+            />
+          </div>
+
+          <div className="field mb-16">
+            <label>Note Content</label>
+            <textarea
+              className="input"
+              placeholder="Write your note or reminder here…"
+              value={newNote.content}
+              onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+              style={{ minHeight: 120 }}
+            />
+          </div>
+
+          <div className="flex-end gap-8">
+            <button className="btn btn-ghost" onClick={() => setShowAddNote(false)}>Cancel</button>
+            <button className="btn btn-primary" onClick={addNote}>Save Note</button>
+          </div>
+        </div>
+      )}
+
+      {/* Notes list */}
+      {notes.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-icon">📝</div>
+          <div className="empty-title">No notes yet</div>
+          <div className="empty-sub">Start by adding a note for your trip.</div>
+          <button className="btn btn-primary" onClick={() => setShowAddNote(true)}>+ Add Note</button>
+        </div>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {notes.map((note) => (
+            <div key={note.id} className="card card-pad">
+              <div className="flex-between mb-8">
+                <div>
+                  <div className="fw-600" style={{ fontSize: 15 }}>{note.title}</div>
+                  <div className="text-xs text-muted mt-2">{new Date(note.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</div>
+                </div>
+                <button className="btn btn-danger btn-xs" onClick={() => deleteNote(note.id)}>Delete</button>
+              </div>
+              <div className="text-sm text-muted" style={{ lineHeight: 1.5 }}>{note.content}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Screen 5: Itinerary Builder ─────────────────────────────────────────────
 function ItineraryBuilder({ setPage, showToast }) {
   const [stops, setStops] = useState(MOCK_STOPS);
@@ -1005,6 +1365,15 @@ export default function App() {
             )}
             {page === "builder" && (
               <ItineraryBuilder setPage={setPage} showToast={showToast} />
+            )}
+            {page === "share" && (
+              <PublicItinerary setPage={setPage} showToast={showToast} />
+            )}
+            {page === "settings" && (
+              <UserSettings user={user} setUser={setUser} setPage={setPage} showToast={showToast} />
+            )}
+            {page === "notes" && (
+              <TripNotes setPage={setPage} showToast={showToast} />
             )}
           </div>
         </>
