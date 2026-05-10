@@ -1,4 +1,31 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+
+import Traveloop from "./Pages/Traveloop.jsx";
+import Trip_Budget_09 from "./Pages/Trip_Budget_09.jsx";
+
+function App() {
+  return (
+    <BrowserRouter>
+
+   <nav style={{ display: "flex", gap: "20px" }}>
+        <Link to="/">Traveloop</Link>
+        <Link to="/budget">Trip Budget</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Traveloop />} />
+        <Route path="/budget" element={<Trip_Budget_09 />} />
+      </Routes>
+
+
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+
+/* Old Files - import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
@@ -120,3 +147,4 @@ function App() {
 }
 
 export default App
+*/
