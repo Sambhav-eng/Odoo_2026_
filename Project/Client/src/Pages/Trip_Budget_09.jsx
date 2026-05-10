@@ -1,5 +1,6 @@
 function Home() {
-  return <h1>Trip Budget</h1>;
+  return <h1>Youre Budget will be added here 
+  </h1>;
 }
 
 export default Home;

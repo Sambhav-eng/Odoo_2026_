@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-
+import './App.css'
 import Traveloop from "./Pages/Traveloop.jsx";
 import Trip_Budget_09 from "./Pages/Trip_Budget_09.jsx";
 
@@ -7,7 +7,7 @@ function App() {
   return (
     <BrowserRouter>
 
-   <nav style={{ display: "flex", gap: "20px" }}>
+   <nav className="navbar">
         <Link to="/">Traveloop</Link>
         <Link to="/budget">Trip Budget</Link>
       </nav>
